@@ -1,0 +1,110 @@
+%% LaTeX2e class for student theses
+%% sections/apendix.tex
+%% 
+%% Karlsruhe Institute of Technology
+%% Institute for Program Structures and Data Organization
+%% Chair for Software Design and Quality (SDQ)
+%%
+%% Dr.-Ing. Erik Burger
+%% burger@kit.edu
+%%
+%% Version 1.3.5, 2020-06-26
+
+\iflanguage{english}
+{\chapter{Appendix}}    % english style
+{\chapter{Anhang}}      % german style
+\label{chap:appendix}
+
+\section{Thevenin Model}
+\label{sec:TheveninFormula}
+This section gives an in-depth look into the mathematical computation that is needed to obtain the formulas of the Thevenin Model. If we simplify our current input, we can even describe the voltage in distinct phases during charging.
+\subsection{General Case}
+\begin{figure}[H]
+    \centering
+    \includegraphics[keepaspectratio=true,scale=0.7]{figures/8_appendix/theveninCircuit.png}
+    \caption{Illustration of the equivalent circuit of the Thevenin model \cite{plett2018batterybootcamp}.}
+    \label{fig:circuitThev}
+\end{figure}
+The overall current is dependent on the two individual currents, flowing through the resistor $R_1$ and capacitor $C_1$: 
+\begin{equation} \label{eq:thev1}
+i_{R_1}(t) + i_{C_1}(t) = i(t).
+\end{equation}
+Since 
+\begin{equation} \label{eq:thev2}
+C = \frac{Q}{U} \Rightarrow i(t) = C \cdot \frac{d \, U(t)}{d \, t} 
+\end{equation}
+and 
+\begin{equation} \label{eq:thev3}
+R_1 = \frac{U_1}{i_{R_1}} \Leftrightarrow U_1 = R_1 \cdot i_{R_1},
+\end{equation}
+we get: 
+\begin{equation} \label{eq:thev4}
+i_{C_1}(t) = C_1 \cdot R_1 \cdot \frac{d \, i_{R_1}(t)}{d t}.
+\end{equation}
+
+When we now insert equation \ref{eq:thev4} in equation \ref{eq:thev1} (using $\tau_1 = R_1 C_1$), we obtain the differential equation
+\begin{equation} \label{eq:thev5}
+i_{R_1}(t) + \tau_1 \cdot \frac{d \, i_{R_1}(t)}{d t} = i(t),
+\end{equation}
+whose solution is
+\begin{equation} \label{eq:thev6}
+i_{R_1}(t) = i_{R_1}(t_0) \cdot \exp{\bigg(-\frac{t-t_0}{\tau_1}\bigg)} + \frac{1}{\tau_1} \cdot \int_{t_0}^{t} \exp{\bigg(-\frac{t-t'}{\tau_1}\bigg)} \cdot i(t') \; d t'.
+\end{equation}
+
+The voltage of this electrical circuit is influenced by the OCV, the two resistors $R_0$ and $R_1$ as well as the capacitor $C_1$. Therefore, it can be described with:
+\begin{equation} \label{eq:thev7}
+v(t) = \text{OCV}(z(t)) - R_1 \cdot i_{R_1}(t) - R_0 \cdot i(t).
+\end{equation}
+
+With the SOC being:
+
+\begin{equation} \label{eq:thev8}
+z(t) = z(t_0) - \frac{1}{Q} \cdot \int_{t_0}^{t} i(t') \; d t'.
+\end{equation}
+
+If we insert equation \ref{eq:thev6} into equation \ref{eq:thev7} we get:
+\begin{equation} \label{eq:thev9}
+v(t) = \text{OCV}(z(t)) - R_1 \cdot i_{R_1}(t_0) \cdot \exp{\bigg(-\frac{t-t_0}{\tau_1}\bigg)} - \frac{1}{C_1} \cdot \int_{t_0}^{t} \exp{\bigg(-\frac{t-t'}{\tau_1}\bigg)} \cdot i(t') \; d t' - R_0 \cdot i(t).
+\end{equation}
+
+\subsection{Special Case}
+If we only consider current profiles of rectangular shape, we can describe the different voltage formulas separately. For illustration we use a rectangular discharge profile defined as follows:
+
+\begin{equation} \label{eq:thev10}
+i(t) =
+\left\{
+	\begin{array}{ll}
+		0  & \mbox{if } t < 0 \\
+		-i_0 & \mbox{if } 0 \leq t \leq t_p \\
+		0 & \mbox{if } t > t_p
+	\end{array}
+\right.
+\end{equation}
+
+We can describe the different voltages separately using multiple case distinctions:
+
+\paragraph{$t < 0$}
+\begin{equation} \label{eq:thev11}
+\begin{gathered} 
+v(t) = \text{OCV}(z_0) \\
+z_0 = z(0) 
+\end{gathered}
+\end{equation}
+
+\paragraph{$0 \leq t \leq t_p$}
+\begin{equation} \label{eq:thev12}
+\begin{gathered} 
+v(t) = \text{OCV}(z(t)) + i_0 \cdot R_1 \cdot \bigg(1 - \exp{\bigg(-\frac{t}{\tau_1}\bigg)}\bigg) + R_0 \cdot i_0 \\
+z(t) = z(0) + \frac{i_0}{Q} \cdot t
+\end{gathered}
+\end{equation}
+
+\paragraph{$t > t_p$}
+\begin{equation} \label{eq:thev13}
+\begin{gathered} 
+v(t)  = \text{OCV}(z_p) + i_0 \cdot R_1 \cdot \exp{\bigg(-\frac{t}{\tau_1}\bigg)} \cdot
+\bigg(\bigg(\exp{\bigg(\frac{t_p}{\tau_1}\bigg)} - 1\bigg)\bigg) \\
+z_p = z(0) + \frac{i_0}{Q} \cdot t_p 
+\end{gathered}
+\end{equation}
+

@@ -1,0 +1,39 @@
+\chapter{Discussion}
+\label{ch:Discussion}
+In chapter \ref{ch:Results} we presented the detailed results for each of our conducted experiments. This section focuses on some high-level observations that we made during the course of this project. 
+
+\section{Generalizability}
+\subsection{Other Algorithms}
+We found that the attention mechanism can be used with other log parsing algorithms as can be seen in figure \ref{fig:results:Algos}. The data also shows that the overall quality of the prediction is dependent on the used parser and that using a more suitable parser for the task leads to better prediction results. In the prior thesis that developed this approach \cite{witterauf2021domainml}, we could see a strong improvement of attention based selection over baseline, but the author only presented the top five categorical accuracy, while we are more interested in the top 20 prediction quality. The author also observed this kind of improvement for a much larger dataset, which we could replicate in our timestamp experiments where we also used the same size dataset as can be seen in figure \ref{fig:TimestampsTemplates}. We hypothesise that when using larger amounts of data, we would observe a similar improvement for Nulog and Spell on the original dataset. At our smaller dataset size of 2000 logs, the attention mechanism still performed well and could be used to increase the robustness of the parsing step towards changes in the log structure, especially since there is no runtime penalty for using it. \\
+
+Our experiments showed that when combining more templates from different parsers and feeding more information into the attention mechanism, the selected templates do not lead to a significantly better prediction quality, as can be seen in figure \ref{fig:all_together}. One possible explanation is that there is a sweet spot for the numbers of templates to offer as a selection that might also depend on the dataset size. So offering nine different templates per log at 2000 total logs might be too much. Another reason could be the overall similarity of the different log templates so that the attention mechanism does not learn clearly some most important template for the prediction task. \\
+
+
+
+\subsection{Other datasets}
+When performing our experiments on the other two datasets, Thunderbird and HDFS, we could not observe an additional benefit of using attention. For Thunderbird, our baseline results were already much worse than the other datasets'. We try to explain these results in this section.\\
+
+One specialty of our original dataset is its large amount of distinct attributes, compared to the other two datasets. While we look at eight different attributes for our next attribute prediction in the Huawei logs, we only use one attribute as prediction target with Thunderbird logs and three with HDFS logs. This lack of structure in the underlying data could explain some part of the bad results. Our original dataset also contained different types of logs: application logs, error logs, system logs, while HDFS and Thunderbird are more homogeneous, each in their own way. \\
+
+The parameters that were set up for the different log parsing algorithms were tuned on the original dataset and have just been copied for our new datasets. It is possible that they are highly unsuited for this type of logs and that the results would look different with other parameters. \\
+
+As mentioned throughout this work: the sizes of the dataset could've also played a large role in the results. As our overall quality and also the difference between attention based selection and baseline decreased when we went from the full Huawei log dataset, it is possible that scaling up the experiments to bigger dataset sizes could lead to better results. 
+
+\section{Timestamps}
+Before we conducted our timestamp experiments, our hypothesis was that timestamps act as noise at large dataset sizes and removing them should improve the prediction accuracy, while at smaller dataset sizes they should be beneficial to learning and contain important information for the prediction. We wanted to find the point where timestamps turn from helpful to hindering. We also predicted that log templates with finer granularity should especially benefit from the removal of timestamps. \\
+
+Our experiments then showed it is true that fine log templates benefited the most from the removal, as in these templates the time stamps often remain intact or get parsed as below:
+\begin{verbatim}
+    23 06 11 17:33:25 -> * * 11 17 33 25
+\end{verbatim}
+
+This is in contrast to the more coarse templates, which might look like this, depending on the parser and specific parameters:
+\begin{verbatim}
+    23 06 11 17:33:25 -> * * * * * 25 
+\end{verbatim}
+
+Furthermore, we observed that the robustness of our prediction greatly increased, similar to the effect of using attention based selection. One possible explanation could be, that the attention mechanism assigned very low importance to the timestamp part of the log templates and that our removal of the timestamps has a similar effect to this ranking. \\ 
+
+On the other hand, it was at the dataset size of 2000 logs that the removal of timestamps had the most positive and significant impact on prediction quality. We believe that the reason for this is that at a lower dataset size, the relative share of timestamps compared to the rest of the log messages is higher, while also not containing helpful information for the prediction part and acting as the kind of noise we hypothesised for large datasets. \\
+
+We only conducted our timestamp experiments on a single dataset and with one algorithm, but we believe that these results would translate to other datasets and algorithms as well and that the removal of timestamps should be incorporated into the log analysis workflow. 

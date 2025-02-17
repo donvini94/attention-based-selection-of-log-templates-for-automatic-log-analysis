@@ -1,0 +1,25 @@
+%% LaTeX2e class for student theses
+%% sections/conclusion.tex
+%% 
+%% Karlsruhe Institute of Technology
+%% Institute for Program Structures and Data Organization
+%% Chair for Software Design and Quality (SDQ)
+%%
+%% Dr.-Ing. Erik Burger
+%% burger@kit.edu
+%%
+%% Version 1.3.5, 2020-06-26
+
+\chapter{Conclusion}
+\label{ch:Conclusion}
+At the beginning of the project we assumed that when combining multiple log parsing algorithms and feeding the generated templates into an attention mechanism, this would lead to improved results compared to only using a single algorithm. \\
+
+We started off by reproducing the original results and then extending the existing codebase to handle multiple different log parsing algorithms and datasets. The original results were improved even more by using other log parsing algorithms that performed better. Parallel to this, we came up with our timestamp hypothesis and conducted the corresponding experiments. We showed that the removal of timestamps has a beneficiary effect on prediction quality across all dataset sizes, but smaller datasets benefited the most.  Thus, we recommend to incorporate timestamp removal as a preprocessing step in the log analysis workflow. \\
+
+After evaluating different log parser combinations and datasets, we can not conclude that this attention based selection method is effective at improving prediction quality. 
+
+
+\section{Further research}
+We conducted the majority of our experiments only on rather small datasets. Future research could repeat these experiments on much larger and more realistically sized datasets and check whether the originally observed positive effects would materialize again. Since we had good results with one dataset, it would be interesting to research what made the experiments successful on this dataset and whether it has some specific properties that made this method work, if the reason for our negative results was not the dataset size. \\
+
+Additionally, we recommend further experiments to solidify our timestamp results and establish the removal of timestamps as a standard preprocessing step. 
